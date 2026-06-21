@@ -1,0 +1,43 @@
+cmake_minimum_required(VERSION 3.16)
+project(Helios VERSION 0.1.0 LANGUAGES CXX)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+# ── Compiler flags ────────────────────────────────────────────────────────────
+# -O0 -g  during development: no optimisations, full debug info
+# -Wall -Wextra: catch common mistakes
+# -fsanitize: catch memory and UB bugs at runtime (remove for benchmarks)
+add_compile_options(
+    -Wall -Wextra -Wpedantic
+    -O0 -g
+)
+
+# Uncomment to enable sanitizers (slows down but catches bugs early):
+# add_compile_options(-fsanitize=address,undefined)
+# add_link_options(-fsanitize=address,undefined)
+
+# ── Core library ──────────────────────────────────────────────────────────────
+# The embedded C++ layer — shared by all demos and tests
+add_library(helios_core STATIC
+    core/src/context.cpp
+)
+target_include_directories(helios_core PUBLIC core/include)
+
+# ── Demo: basic_switch ────────────────────────────────────────────────────────
+# Week 1: two tasks, manual context switching, no scheduler
+add_executable(basic_switch demos/basic_switch.cpp)
+target_link_libraries(basic_switch PRIVATE helios_core)
+
+# ── Future demos (uncomment as you build each week) ───────────────────────────
+# add_executable(rr_demo      demos/rr_demo.cpp)
+# target_link_libraries(rr_demo      PRIVATE helios_core)
+
+# add_executable(edf_demo     demos/edf_demo.cpp)
+# target_link_libraries(edf_demo     PRIVATE helios_core)
+
+# add_executable(priority_inv demos/priority_inv.cpp)
+# target_link_libraries(priority_inv PRIVATE helios_core)
+
+# add_executable(jitter_bench demos/jitter_bench.cpp)
+# target_link_libraries(jitter_bench PRIVATE helios_core)
